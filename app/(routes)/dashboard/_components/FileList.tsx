@@ -1,3 +1,4 @@
+"use client";
 import { FileListContext } from "@/app/_context/FilesListContext";
 import React, { useContext, useEffect, useState } from "react";
 import moment from "moment";

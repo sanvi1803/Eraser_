@@ -9,9 +9,9 @@ import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 import { FileListContext } from "@/app/_context/FilesListContext";
 export interface TEAM {
-  createdBy: String;
-  teamName: String;
-  _id: String;
+  createdBy: string;
+  teamName: string;
+  _id: string;
 }
 function SideNav() {
   const { user }: any = useKindeBrowserClient();
@@ -19,15 +19,19 @@ function SideNav() {
   const [activeTeam, setActiveTeam] = useState<TEAM>();
   const [totalFiles, setTotalFiles] = useState<Number>();
   const convex = useConvex();
-  const { fileList_,setFileList_} = useContext(FileListContext);
+  const { fileList_, setFileList_ } = useContext(FileListContext);
   useEffect(() => {
     activeTeam && getFiles();
   }, [activeTeam]);
   const onFileCreate = (fileName: string) => {
     console.log(fileName);
+    if (!activeTeam?._id) {
+      toast("Error: No team selected");
+      return;
+    }
     createFile({
       fileName: fileName,
-      teamId: activeTeam?._id,
+      teamId: activeTeam ? activeTeam._id : "",
       createdBy: user?.email,
       archive: false,
       document: "",
@@ -45,11 +49,15 @@ function SideNav() {
     );
   };
   const getFiles = async () => {
+    if (!activeTeam?._id) {
+      toast("Error: No team selected");
+      return;
+    }
     const result = await convex.query(api.files.getFiles, {
-      teamId: activeTeam?._id,
+      teamId: activeTeam?._id || "",
     });
     console.log("Files", result);
-    setFileList_(result)
+    setFileList_(result);
     setTotalFiles(result?.length);
   };
   return (
